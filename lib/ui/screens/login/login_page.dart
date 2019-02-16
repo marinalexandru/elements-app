@@ -27,7 +27,9 @@ class LoginPageState extends State<LoginPage> {
     _authBloc = BlocProvider.of<AuthBloc>(context);
     _subscription = _authBloc.auth
         .listen((success) => success ? _navigateToMainPage(context) : null);
-    _subscription.onError((e) => displayError(e, context));
+    _subscription.onError((e) {
+      displayError(e, context);
+    });
   }
 
   @override
