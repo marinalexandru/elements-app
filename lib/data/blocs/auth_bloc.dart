@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:elements/data/sources/fire_store_source.dart';
 import 'package:elements/data/bloc_provider.dart';
 import 'package:elements/data/repositories/auth_repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -54,7 +54,7 @@ class AuthBloc extends BlocBase {
   }
 
   void _notify() {
-    _repository.currentUser().asStream().listen((FirebaseUser user) {
+    _repository.currentUser().asStream().listen((User user) {
       _authSubject.add(user != null);
     });
   }

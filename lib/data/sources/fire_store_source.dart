@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:elements/data/errors/app_error.dart';
 
-const keyEmail = 'email';
-const keyPasswordHash = 'passwordHash';
-const collectionUsers = 'users';
+class User {
+  final String userId;
+  final String userEmail;
+
+  User({this.userId, this.userEmail});
+}
 
 class FireStoreSource {
   Firestore _fireStore = Firestore.instance;
@@ -18,26 +21,38 @@ class FireStoreSource {
     );
   }
 
-  Future<FirebaseUser> createUser(String email, String passwordHash) async {
+  Future<User> createUser(String email, String passwordHash) async {
     try {
-      return await _fireAuth.createUserWithEmailAndPassword(
+      var fireBaseUser = await _fireAuth.createUserWithEmailAndPassword(
           email: email, password: passwordHash);
+      return User(
+        userId: fireBaseUser.uid,
+        userEmail: fireBaseUser.email,
+      );
     } catch (e) {
       throw _transformFireBaseExceptionToAppError(e);
     }
   }
 
-  Future<FirebaseUser> signIn(String email, String passwordHash) async {
+  Future<User> signIn(String email, String passwordHash) async {
     try {
-      return await _fireAuth.signInWithEmailAndPassword(
+      var fireBaseUser = await _fireAuth.signInWithEmailAndPassword(
           email: email, password: passwordHash);
+      return User(
+        userId: fireBaseUser.uid,
+        userEmail: fireBaseUser.email,
+      );
     } catch (e) {
       throw _transformFireBaseExceptionToAppError(e);
     }
   }
 
-  Future<FirebaseUser> currentUser() async {
-    return await _fireAuth.currentUser();
+  Future<User> currentUser() async {
+    var fireBaseUser = await _fireAuth.currentUser();
+    return User(
+      userId: fireBaseUser.uid,
+      userEmail: fireBaseUser.email,
+    );
   }
 
   Future<void> signOut() async {

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:elements/data/sources/fire_store_source.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -14,7 +13,7 @@ class AuthRepository {
     await _fireStoreSource.signIn(email, _hash(password));
   }
 
-  Future<FirebaseUser> currentUser() async {
+  Future<User> currentUser() async {
     return await _fireStoreSource.currentUser();
   }
 

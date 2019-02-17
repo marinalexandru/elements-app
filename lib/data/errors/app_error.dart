@@ -25,5 +25,10 @@ enum ErrorCode {
   passwordMatch,
   errorWeakPassword,
   errorAnonymousSignInNotAllowed,
-  processingError
+  processingError,
+  //new
+  fitConnectError,
+  fitSubscribeError,
+  fitIsSubscribedError,
+  fitGetStepsError,
 }
