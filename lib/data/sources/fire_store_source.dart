@@ -1,18 +1,13 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:elements/data/errors/app_error.dart';
-
-class User {
-  final String userId;
-  final String userEmail;
-
-  User({this.userId, this.userEmail});
-}
+import 'package:elements/data/models/User.dart';
+import 'package:elements/data/models/user_elements.dart';
+import 'package:elements/data/models/user_steps.dart';
+import 'package:elements/data/sources/fire_store_keys.dart';
 
 class FireStoreSource {
   Firestore _fireStore = Firestore.instance;
-  FirebaseAuth _fireAuth = FirebaseAuth.instance;
 
   FireStoreSource() {
     _fireStore.settings(
@@ -21,69 +16,74 @@ class FireStoreSource {
     );
   }
 
-  Future<User> createUser(String email, String passwordHash) async {
-    try {
-      var fireBaseUser = await _fireAuth.createUserWithEmailAndPassword(
-          email: email, password: passwordHash);
-      return User(
-        userId: fireBaseUser.uid,
-        userEmail: fireBaseUser.email,
+  Future<void> insertUserInDatabase(User user) =>
+      _fireStore.collection(FIRE_KEY_USERS).document(user.userId).setData(
+        {
+          FIRE_KEY_USER_ID: user.userId,
+          FIRE_KEY_USER_EMAIL: user.userEmail,
+        },
       );
-    } catch (e) {
-      throw _transformFireBaseExceptionToAppError(e);
-    }
-  }
 
-  Future<User> signIn(String email, String passwordHash) async {
-    try {
-      var fireBaseUser = await _fireAuth.signInWithEmailAndPassword(
-          email: email, password: passwordHash);
-      return User(
-        userId: fireBaseUser.uid,
-        userEmail: fireBaseUser.email,
+  Stream<UserElements> getUserElements(String userId) => _fireStore
+      .collection(FIRE_KEY_ELEMENTS)
+      .document(userId)
+      .snapshots()
+      .transform(_elementSnapshotTransform);
+
+  Stream<UserSteps> getUserSteps(String userId) => _fireStore
+      .collection(FIRE_KEY_STEPS)
+      .document(userId)
+      .snapshots()
+      .transform(_stepSnapshotTransform);
+
+  Future<void> setSteps(User user, int active, int consumed, DateTime t,
+          List<dynamic> week) =>
+      _fireStore.collection(FIRE_KEY_STEPS).document(user.userId).setData(
+        {
+          FIRE_KEY_ACTIVE_STEPS: active,
+          FIRE_KEY_CONSUMED_STEPS: consumed,
+          FIRE_KEY_CONSUMED_TIMESTAMP: t,
+          FIRE_KEY_WEEK_DAYS: week,
+        },
       );
-    } catch (e) {
-      throw _transformFireBaseExceptionToAppError(e);
-    }
-  }
 
-  Future<User> currentUser() async {
-    var fireBaseUser = await _fireAuth.currentUser();
-    return User(
-      userId: fireBaseUser.uid,
-      userEmail: fireBaseUser.email,
-    );
-  }
+  Future<void> setElements(
+          User u, int water, int earth, int fire, int wind) =>
+      _fireStore.collection(FIRE_KEY_ELEMENTS).document(u.userId).setData(
+        {
+          FIRE_KEY_WATER: water,
+          FIRE_KEY_EARTH: earth,
+          FIRE_KEY_FIRE: fire,
+          FIRE_KEY_WIND: wind,
+        },
+      );
 
-  Future<void> signOut() async {
-    return await _fireAuth.signOut();
-  }
+  StreamTransformer<DocumentSnapshot, UserElements>
+      get _elementSnapshotTransform =>
+          StreamTransformer<DocumentSnapshot, UserElements>.fromHandlers(
+            handleData: (document, sink) {
+              sink.add(
+                UserElements(
+                  water: document.data[FIRE_KEY_WATER],
+                  earth: document.data[FIRE_KEY_EARTH],
+                  fire: document.data[FIRE_KEY_FIRE],
+                  wind: document.data[FIRE_KEY_WIND],
+                ),
+              );
+            },
+          );
 
-  AppError _transformFireBaseExceptionToAppError(e) {
-    if (e is PlatformException) {
-      switch (e.code) {
-        case "ERROR_OPERATION_NOT_ALLOWED":
-          return AppError(
-              code: ErrorCode.errorAnonymousSignInNotAllowed, originalError: e);
-        case "ERROR_EMAIL_ALREADY_IN_USE":
-          return AppError(
-              code: ErrorCode.errorUserAlreadyRegistered, originalError: e);
-        case "ERROR_INVALID_CREDENTIAL":
-          return AppError(
-              code: ErrorCode.errorInvalidCredentials, originalError: e);
-        case "ERROR_WEAK_PASSWORD":
-          return AppError(code: ErrorCode.errorWeakPassword, originalError: e);
-        case "ERROR_INVALID_EMAIL":
-        case "ERROR_USER_NOT_FOUND":
-        case "ERROR_WRONG_PASSWORD":
-        case "ERROR_USER_DISABLED":
-          return AppError(
-              code: ErrorCode.errorInvalidCredentials, originalError: e);
-        default:
-          return AppError(code: ErrorCode.processingError, originalError: e);
-      }
-    } else {
-      return AppError(code: ErrorCode.processingError, originalError: e);
-    }
-  }
+  StreamTransformer<DocumentSnapshot, UserSteps> get _stepSnapshotTransform =>
+      StreamTransformer<DocumentSnapshot, UserSteps>.fromHandlers(
+        handleData: (document, sink) {
+          sink.add(
+            UserSteps(
+              activeSteps: document.data[FIRE_KEY_ACTIVE_STEPS],
+              consumedSteps: document.data[FIRE_KEY_CONSUMED_STEPS],
+              consumedTimestamp: document.data[FIRE_KEY_CONSUMED_TIMESTAMP],
+              weekDays: document.data[FIRE_KEY_WEEK_DAYS],
+            ),
+          );
+        },
+      );
 }

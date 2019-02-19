@@ -66,9 +66,7 @@ class FitStoreSource {
     try {
       return await fitChannel.invokeMethod(
         methodGetTotalStepsFrom,
-        <String, dynamic>{
-          argFrom: from,
-        },
+        {argFrom: from},
       );
     } on PlatformException catch (e) {
       throw AppError(code: ErrorCode.fitGetStepsError, originalError: e);
@@ -83,7 +81,7 @@ class FitStoreSource {
     }
   }
 
-  void dispose() {
+  void dispose(){
     _connectedStreamController.close();
   }
 }

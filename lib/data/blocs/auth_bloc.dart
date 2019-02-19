@@ -1,5 +1,5 @@
-import 'package:elements/data/sources/fire_store_source.dart';
 import 'package:elements/data/bloc_provider.dart';
+import 'package:elements/data/models/User.dart';
 import 'package:elements/data/repositories/auth_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
