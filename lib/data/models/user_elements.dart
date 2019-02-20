@@ -1,4 +1,3 @@
-import 'package:elements/data/sources/fire_store_keys.dart';
 
 class UserElements {
   int water;
@@ -7,9 +6,9 @@ class UserElements {
   int wind;
 
   UserElements({
-    this.water,
-    this.earth,
-    this.fire,
-    this.wind,
+    this.water = 0,
+    this.earth = 0,
+    this.fire = 0,
+    this.wind = 0,
   });
 }

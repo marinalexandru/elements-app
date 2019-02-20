@@ -13,30 +13,32 @@ class WeekChart extends StatelessWidget {
   // This section is excluded from being copied to the gallery.
   // It is used for creating random series data to demonstrate animation in
   // the example app only.
-  factory WeekChart.withRandomData() {
-    return WeekChart(_createRandomData());
+  factory WeekChart.withWeekData(List<int> list) {
+    return WeekChart(_createWeekData(list));
   }
 
   /// Create random data.
-  static List<Series<OrdinalSales, String>> _createRandomData() {
-    final random = new Random();
+  static List<Series<OrdinalSteps, String>> _createWeekData(List<int> list) {
+//    final data =
+//    list.map((weekSteps) => OrdinalSteps("day", weekSteps)).toList();
+
 
     final data = [
-      new OrdinalSales('MON', random.nextInt(10000)),
-      new OrdinalSales('TUE', random.nextInt(10000)),
-      new OrdinalSales('WED', random.nextInt(10000)),
-      new OrdinalSales('THU', random.nextInt(10000)),
-      new OrdinalSales('FRI', random.nextInt(10000)),
-      new OrdinalSales('SAT', random.nextInt(10000)),
-      new OrdinalSales('SUN', random.nextInt(10000)),
+      new OrdinalSteps('MON', list[0]),
+      new OrdinalSteps('TUE', list[1]),
+      new OrdinalSteps('WED', list[2]),
+      new OrdinalSteps('THU', list[3]),
+      new OrdinalSteps('FRI', list[4]),
+      new OrdinalSteps('SAT', list[5]),
+      new OrdinalSteps('SUN', list[6]),
     ];
 
     return [
-      new Series<OrdinalSales, String>(
+      new Series<OrdinalSteps, String>(
         id: 'Week activity',
         colorFn: (_, __) => MaterialPalette.white,
-        domainFn: (OrdinalSales sales, _) => sales.day,
-        measureFn: (OrdinalSales sales, _) => sales.active,
+        domainFn: (OrdinalSteps sales, _) => sales.day,
+        measureFn: (OrdinalSteps sales, _) => sales.active,
         data: data,
       )
     ];
@@ -73,9 +75,9 @@ class WeekChart extends StatelessWidget {
 }
 
 /// Sample ordinal data type.
-class OrdinalSales {
+class OrdinalSteps {
   final String day;
   final int active;
 
-  OrdinalSales(this.day, this.active);
+  OrdinalSteps(this.day, this.active);
 }

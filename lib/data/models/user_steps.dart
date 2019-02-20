@@ -1,15 +1,15 @@
-import 'package:elements/data/sources/fire_store_keys.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserSteps {
-  int activeSteps;
-  int consumedSteps;
-  DateTime consumedTimestamp;
-  List<int> weekDays;
+  final int activeSteps;
+  final int consumedSteps;
+  final Timestamp consumedTimestamp;
+  final List<int> weekDays;
 
   UserSteps({
-    this.activeSteps,
-    this.consumedSteps,
+    this.activeSteps = 0,
+    this.consumedSteps = 0,
     this.consumedTimestamp,
-    this.weekDays,
+    this.weekDays = const [0, 0, 0, 0, 0, 0, 0],
   });
 }

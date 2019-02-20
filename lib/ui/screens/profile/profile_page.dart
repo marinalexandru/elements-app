@@ -1,3 +1,7 @@
+import 'package:elements/data/bloc_provider.dart';
+import 'package:elements/data/blocs/elements_bloc.dart';
+import 'package:elements/data/blocs/steps_bloc.dart';
+import 'package:elements/data/models/user_elements.dart';
 import 'package:flutter/material.dart';
 import 'package:elements/utils/color_theme.dart';
 import 'package:elements/utils/strings.dart';
@@ -24,18 +28,22 @@ class ProfilePage extends StatelessWidget {
         ),
       );
 
-  _buildElements(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildElementBadge(
-              Strings.of(context).labelWater, "images/water.png", 99),
-          _buildElementBadge(
-              Strings.of(context).labelEarth, "images/leaf.png", 20),
-          _buildElementBadge(
-              Strings.of(context).labelFire, "images/fire.png", 130),
-          _buildElementBadge(
-              Strings.of(context).labelWind, "images/wind.png", 40),
-        ],
+  _buildElements(BuildContext context) => StreamBuilder<UserElements>(
+        initialData: UserElements(water: 0, earth: 0, fire: 0, wind: 0),
+        stream: BlocProvider.of<ElementsBloc>(context).userElements,
+        builder: (context, AsyncSnapshot<UserElements> snapshot) => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildElementBadge(Strings.of(context).labelWater,
+                    "images/water.png", snapshot.data.water),
+                _buildElementBadge(Strings.of(context).labelEarth,
+                    "images/leaf.png", snapshot.data.earth),
+                _buildElementBadge(Strings.of(context).labelFire,
+                    "images/fire.png", snapshot.data.fire),
+                _buildElementBadge(Strings.of(context).labelWind,
+                    "images/wind.png", snapshot.data.wind),
+              ],
+            ),
       );
 
   _buildElementBadge(String label, String path, int value) => Column(
@@ -72,26 +80,30 @@ class ProfilePage extends StatelessWidget {
         image: new AssetImage(path),
       );
 
-  _buildAllTime(BuildContext context) => Padding(
-        padding: EdgeInsets.only(top: 0, bottom: 0, left: 20, right: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle(Strings.of(context).labelTotalStats),
-            _buildAllTimeVerticalSpace(),
-            _buildStatEntry(
-              "images/exploration.png",
-              Strings.of(context).labelExploration,
-              "100 ${Strings.of(context).labelSteps}",
+  _buildAllTime(BuildContext context) => StreamBuilder<int>(
+        initialData: 0,
+        stream: BlocProvider.of<StepsBloc>(context).userTotalSteps,
+        builder: (c, s) => Padding(
+              padding: EdgeInsets.only(top: 0, bottom: 0, left: 20, right: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle(Strings.of(context).labelTotalStats),
+                  _buildAllTimeVerticalSpace(),
+                  _buildStatEntry(
+                    "images/exploration.png",
+                    Strings.of(context).labelExploration,
+                    "${s.data} ${Strings.of(context).labelSteps}",
+                  ),
+                  _buildAllTimeVerticalSpace(),
+                  _buildStatEntry(
+                    "images/element.png",
+                    Strings.of(context).labelHarvested,
+                    "${(s.data / ElementsBloc.stepsPerElement).round()} ${Strings.of(context).labelElements}",
+                  ),
+                ],
+              ),
             ),
-            _buildAllTimeVerticalSpace(),
-            _buildStatEntry(
-              "images/element.png",
-              Strings.of(context).labelHarvested,
-              "100 ${Strings.of(context).labelElements}",
-            ),
-          ],
-        ),
       );
 
   _buildAllTimeVerticalSpace() => Container(

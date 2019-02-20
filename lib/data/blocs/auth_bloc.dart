@@ -54,7 +54,7 @@ class AuthBloc extends BlocBase {
   }
 
   void _notify() {
-    _repository.currentUser().asStream().listen((User user) {
+    _repository.currentUser().then((User user) {
       _authSubject.add(user != null);
     });
   }

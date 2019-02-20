@@ -36,8 +36,8 @@ class FireStoreSource {
       .snapshots()
       .transform(_stepSnapshotTransform);
 
-  Future<void> setSteps(User user, int active, int consumed, DateTime t,
-          List<dynamic> week) =>
+  Future<void> setSteps(
+          User user, int active, int consumed, DateTime t, List<int> week) =>
       _fireStore.collection(FIRE_KEY_STEPS).document(user.userId).setData(
         {
           FIRE_KEY_ACTIVE_STEPS: active,
@@ -47,8 +47,7 @@ class FireStoreSource {
         },
       );
 
-  Future<void> setElements(
-          User u, int water, int earth, int fire, int wind) =>
+  Future<void> setElements(User u, int water, int earth, int fire, int wind) =>
       _fireStore.collection(FIRE_KEY_ELEMENTS).document(u.userId).setData(
         {
           FIRE_KEY_WATER: water,
@@ -62,6 +61,10 @@ class FireStoreSource {
       get _elementSnapshotTransform =>
           StreamTransformer<DocumentSnapshot, UserElements>.fromHandlers(
             handleData: (document, sink) {
+              if (document == null || document.data == null) {
+                sink.add(UserElements());
+                return;
+              }
               sink.add(
                 UserElements(
                   water: document.data[FIRE_KEY_WATER],
@@ -76,12 +79,20 @@ class FireStoreSource {
   StreamTransformer<DocumentSnapshot, UserSteps> get _stepSnapshotTransform =>
       StreamTransformer<DocumentSnapshot, UserSteps>.fromHandlers(
         handleData: (document, sink) {
+          if (document == null || document.data == null) {
+            sink.add(UserSteps());
+            return;
+          }
+
           sink.add(
             UserSteps(
               activeSteps: document.data[FIRE_KEY_ACTIVE_STEPS],
               consumedSteps: document.data[FIRE_KEY_CONSUMED_STEPS],
               consumedTimestamp: document.data[FIRE_KEY_CONSUMED_TIMESTAMP],
-              weekDays: document.data[FIRE_KEY_WEEK_DAYS],
+              weekDays: document.data[FIRE_KEY_WEEK_DAYS]
+                  .cast<String>()
+                  .map((e) => int.parse(e))
+                  .toList().cast<int>(),
             ),
           );
         },

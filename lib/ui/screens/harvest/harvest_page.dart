@@ -1,3 +1,5 @@
+import 'package:elements/data/bloc_provider.dart';
+import 'package:elements/data/blocs/steps_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:elements/ui/screens/harvest/widgets/week_chart.dart';
 import 'package:elements/utils/color_theme.dart';
@@ -13,16 +15,20 @@ class HarvestPage extends StatelessWidget {
         ],
       );
 
-  _buildWeekChart(BuildContext context) => Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle(Strings.of(context).labelThisWeek),
-            Container(height: 10),
-            Container(height: 100, child: WeekChart.withRandomData()),
-          ],
-        ),
+  _buildWeekChart(BuildContext context) => StreamBuilder<List<int>>(
+        initialData: [0, 0, 0, 0, 0, 0, 0],
+        stream: BlocProvider.of<StepsBloc>(context).userWeekSteps,
+        builder: (c, s) => Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle(Strings.of(context).labelThisWeek),
+                  Container(height: 10),
+                  Container(height: 100, child: WeekChart.withWeekData(s.data)),
+                ],
+              ),
+            ),
       );
 
   _buildElementsContainer(BuildContext context) => Padding(

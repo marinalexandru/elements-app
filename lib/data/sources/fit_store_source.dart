@@ -54,9 +54,10 @@ class FitStoreSource {
     }
   }
 
-  Future<String> getTodaySteps() async {
+  Future<int> getTodaySteps() async {
     try {
-      return await fitChannel.invokeMethod(methodGetTodaySteps);
+      String valAsString = await fitChannel.invokeMethod(methodGetTodaySteps);
+      return int.parse(valAsString);
     } on PlatformException catch (e) {
       throw AppError(code: ErrorCode.fitGetStepsError, originalError: e);
     }
@@ -73,15 +74,16 @@ class FitStoreSource {
     }
   }
 
-  Future<List<dynamic>> getDailyWeekSteps() async {
+  Future<List<int>> getDailyWeekSteps() async {
     try {
-      return await fitChannel.invokeMethod(methodGetDailyWeekSteps);
+      var dList = await fitChannel.invokeMethod(methodGetDailyWeekSteps);
+      return dList.cast<int>();
     } catch (e) {
       throw AppError(code: ErrorCode.fitGetStepsError, originalError: e);
     }
   }
 
-  void dispose(){
+  void dispose() {
     _connectedStreamController.close();
   }
 }

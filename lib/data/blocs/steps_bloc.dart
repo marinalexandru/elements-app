@@ -9,7 +9,7 @@ class StepsBloc extends BlocBase {
 
   StreamSubscription<bool> _streamSubscription;
 
-  Stream<List> get userWeekSteps =>
+  Stream<List<int>> get userWeekSteps =>
       _stepsRepository.userSteps.transform(_weekTransform);
 
   Stream<int> get userTotalSteps =>
@@ -24,8 +24,8 @@ class StepsBloc extends BlocBase {
     });
   }
 
-  StreamTransformer<UserSteps, List> get _weekTransform =>
-      StreamTransformer<UserSteps, List>.fromHandlers(
+  StreamTransformer<UserSteps, List<int>> get _weekTransform =>
+      StreamTransformer<UserSteps, List<int>>.fromHandlers(
         handleData: (UserSteps userSteps, sink) {
           sink.add(userSteps.weekDays);
         },

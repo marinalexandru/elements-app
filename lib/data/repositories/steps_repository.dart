@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elements/data/errors/app_error.dart';
 import 'package:elements/data/models/user_steps.dart';
 import 'package:elements/data/sources/fire_auth_source.dart';
@@ -31,7 +32,7 @@ class StepsRepository {
     });
   }
 
-  Future<int> getGoogleFitStepsFrom(DateTime from) async {
+  Future<int> getGoogleFitStepsFrom(Timestamp from) async {
     String stepsAsString = await _fitStoreSource
         .getTotalStepsFrom(from.millisecondsSinceEpoch.toString());
     return int.parse(stepsAsString);

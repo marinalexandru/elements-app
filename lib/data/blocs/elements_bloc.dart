@@ -1,15 +1,16 @@
 import 'dart:math';
 
+import 'package:elements/data/bloc_provider.dart';
 import 'package:elements/data/models/elements.dart';
 import 'package:elements/data/models/user_elements.dart';
 import 'package:elements/data/models/user_steps.dart';
 import 'package:elements/data/repositories/elements_repository.dart';
 import 'package:elements/data/repositories/steps_repository.dart';
 
-class ElementsBloc {
-  final int stepsPerElement = 500;
+class ElementsBloc extends BlocBase {
   final _stepsRepository = StepsRepository();
   final _elementsRepository = ElementsRepository();
+  static final int stepsPerElement = 500;
 
   Stream<UserElements> get userElements => _elementsRepository.userElements;
 
@@ -35,5 +36,10 @@ class ElementsBloc {
       elements.addElement(element);
     }
     return elements;
+  }
+
+  @override
+  void dispose() {
+    _elementsRepository.dispose();
   }
 }
