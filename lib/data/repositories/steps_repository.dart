@@ -24,7 +24,7 @@ class StepsRepository {
 
   StepsRepository() {
     _fireAuthSource.currentUser().then((user) {
-      _subscription = _fireStoreSource.getUserSteps(user.userId).listen(
+      _subscription = _fireStoreSource.getUserStepsStream(user.userId).listen(
         (UserSteps userSteps) {
           _userStepsSubject.sink.add(userSteps);
         },

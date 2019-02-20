@@ -46,14 +46,15 @@ class StepsBloc extends BlocBase {
       );
 
   Future<void> _refreshSteps() async {
-    UserSteps userSteps = (await _stepsRepository.userSteps.last);
-    int stepsFrom = await _stepsRepository
-        .getGoogleFitStepsFrom(userSteps.consumedTimestamp);
-    int activeSteps = userSteps.activeSteps + stepsFrom;
-    return await _stepsRepository.setSteps(
-      activeSteps,
-      userSteps.consumedSteps,
-    );
+    _stepsRepository.userSteps.listen((userSteps) async {
+      int stepsFrom = await _stepsRepository
+          .getGoogleFitStepsFrom(userSteps.consumedTimestamp);
+      int activeSteps = userSteps.activeSteps + stepsFrom;
+      await _stepsRepository.setSteps(
+        activeSteps,
+        userSteps.consumedSteps,
+      );
+    }).asFuture();
   }
 
   void connect() => _stepsRepository.connect();

@@ -18,7 +18,7 @@ class ElementsRepository {
 
   ElementsRepository() {
     _fireAuthSource.currentUser().then((user) {
-      _subscription = _fireStoreSource.getUserElements(user.userId).listen(
+      _subscription = _fireStoreSource.getUserElementsStream(user.userId).listen(
         (UserElements userSteps) {
           _userElementsSubject.sink.add(userSteps);
         },

@@ -24,13 +24,13 @@ class FireStoreSource {
         },
       );
 
-  Stream<UserElements> getUserElements(String userId) => _fireStore
+  Stream<UserElements> getUserElementsStream(String userId) => _fireStore
       .collection(FIRE_KEY_ELEMENTS)
       .document(userId)
       .snapshots()
       .transform(_elementSnapshotTransform);
 
-  Stream<UserSteps> getUserSteps(String userId) => _fireStore
+  Stream<UserSteps> getUserStepsStream(String userId) => _fireStore
       .collection(FIRE_KEY_STEPS)
       .document(userId)
       .snapshots()
@@ -92,7 +92,8 @@ class FireStoreSource {
               weekDays: document.data[FIRE_KEY_WEEK_DAYS]
                   .cast<String>()
                   .map((e) => int.parse(e))
-                  .toList().cast<int>(),
+                  .toList()
+                  .cast<int>(),
             ),
           );
         },
