@@ -38,14 +38,18 @@ class FireStoreSource {
 
   Future<void> setSteps(
           User user, int active, int consumed, DateTime t, List<int> week) =>
-      _fireStore.collection(FIRE_KEY_STEPS).document(user.userId).setData(
-        {
-          FIRE_KEY_ACTIVE_STEPS: active,
-          FIRE_KEY_CONSUMED_STEPS: consumed,
-          FIRE_KEY_CONSUMED_TIMESTAMP: t,
-          FIRE_KEY_WEEK_DAYS: week,
-        },
-      );
+      _fireStore.collection(FIRE_KEY_STEPS).document(user.userId).setData({
+        FIRE_KEY_ACTIVE_STEPS: active,
+        FIRE_KEY_CONSUMED_STEPS: consumed,
+        FIRE_KEY_CONSUMED_TIMESTAMP: t,
+        FIRE_KEY_WEEK_DAY1: week[0],
+        FIRE_KEY_WEEK_DAY2: week[1],
+        FIRE_KEY_WEEK_DAY3: week[2],
+        FIRE_KEY_WEEK_DAY4: week[3],
+        FIRE_KEY_WEEK_DAY5: week[4],
+        FIRE_KEY_WEEK_DAY6: week[5],
+        FIRE_KEY_WEEK_DAY7: week[6],
+      });
 
   Future<void> setElements(User u, int water, int earth, int fire, int wind) =>
       _fireStore.collection(FIRE_KEY_ELEMENTS).document(u.userId).setData(
@@ -89,11 +93,15 @@ class FireStoreSource {
               activeSteps: document.data[FIRE_KEY_ACTIVE_STEPS],
               consumedSteps: document.data[FIRE_KEY_CONSUMED_STEPS],
               consumedTimestamp: document.data[FIRE_KEY_CONSUMED_TIMESTAMP],
-              weekDays: document.data[FIRE_KEY_WEEK_DAYS]
-                  .cast<String>()
-                  .map((e) => int.parse(e))
-                  .toList()
-                  .cast<int>(),
+              weekDays: [
+                document.data[FIRE_KEY_WEEK_DAY1],
+                document.data[FIRE_KEY_WEEK_DAY2],
+                document.data[FIRE_KEY_WEEK_DAY3],
+                document.data[FIRE_KEY_WEEK_DAY4],
+                document.data[FIRE_KEY_WEEK_DAY5],
+                document.data[FIRE_KEY_WEEK_DAY6],
+                document.data[FIRE_KEY_WEEK_DAY7],
+              ],
             ),
           );
         },

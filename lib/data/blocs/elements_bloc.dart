@@ -16,7 +16,7 @@ class ElementsBloc extends BlocBase {
 
   void convert() async {
     await _stepsRepository.userSteps.listen((userSteps) async {
-      int conversions = (userSteps.activeSteps / stepsPerElement) as int;
+      int conversions = (userSteps.activeSteps / stepsPerElement).floor();
       int active = userSteps.activeSteps % stepsPerElement;
       var elements = _randomElements(conversions);
       _elementsRepository.saveElements(

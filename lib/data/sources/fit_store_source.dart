@@ -76,8 +76,8 @@ class FitStoreSource {
 
   Future<List<int>> getDailyWeekSteps() async {
     try {
-      var dList = await fitChannel.invokeMethod(methodGetDailyWeekSteps);
-      return dList.cast<int>();
+      List<dynamic> dList = await fitChannel.invokeMethod(methodGetDailyWeekSteps);
+      return dList.map((d)=> int.parse(d)).toList();
     } catch (e) {
       throw AppError(code: ErrorCode.fitGetStepsError, originalError: e);
     }

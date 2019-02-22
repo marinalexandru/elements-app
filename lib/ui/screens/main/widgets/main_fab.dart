@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 class MainFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FloatingActionButton(
-        onPressed: () => BlocProvider.of<StepsBloc>(context).connect(),
-//        onPressed: () => BlocProvider.of<ElementsBloc>(context).convert(),
+//        onPressed: () => BlocProvider.of<StepsBloc>(context).connect(),
+        onPressed: () => BlocProvider.of<ElementsBloc>(context).convert(),
         child: Image(
           image: AssetImage('images/fab.png'),
           width: 48,

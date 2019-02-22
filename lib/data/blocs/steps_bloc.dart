@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elements/data/bloc_provider.dart';
 import 'package:elements/data/models/user_steps.dart';
 import 'package:elements/data/repositories/steps_repository.dart';
@@ -47,8 +48,9 @@ class StepsBloc extends BlocBase {
 
   Future<void> _refreshSteps() async {
     _stepsRepository.userSteps.listen((userSteps) async {
+      var timestamp = userSteps.consumedTimestamp;
       int stepsFrom = await _stepsRepository
-          .getGoogleFitStepsFrom(userSteps.consumedTimestamp);
+          .getGoogleFitStepsFrom(timestamp != null ? timestamp : _now());
       int activeSteps = userSteps.activeSteps + stepsFrom;
       await _stepsRepository.setSteps(
         activeSteps,
@@ -64,4 +66,6 @@ class StepsBloc extends BlocBase {
     _streamSubscription.cancel();
     _stepsRepository.dispose();
   }
+
+  _now() => Timestamp.now();
 }
