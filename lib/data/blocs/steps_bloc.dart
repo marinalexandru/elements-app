@@ -11,13 +11,13 @@ class StepsBloc extends BlocBase {
   StreamSubscription<bool> _streamSubscription;
 
   Stream<List<int>> get userWeekSteps =>
-      _stepsRepository.userSteps.transform(_weekTransform);
+      _stepsRepository.userStepsStream.transform(_weekTransform);
 
   Stream<int> get userTotalSteps =>
-      _stepsRepository.userSteps.transform(_userTotalStepsTransform);
+      _stepsRepository.userStepsStream.transform(_userTotalStepsTransform);
 
   Stream<int> get userActiveSteps =>
-      _stepsRepository.userSteps.transform(_userActiveStepsTransform);
+      _stepsRepository.userStepsStream.transform(_userActiveStepsTransform);
 
   StepsBloc() {
     _streamSubscription = _stepsRepository.connected.listen((connected) async {
@@ -47,19 +47,20 @@ class StepsBloc extends BlocBase {
       );
 
   Future<void> _refreshSteps() async {
-    _stepsRepository.userSteps.listen((userSteps) async {
-      var timestamp = userSteps.consumedTimestamp;
-      int stepsFrom = await _stepsRepository
-          .getGoogleFitStepsFrom(timestamp != null ? timestamp : _now());
-      int activeSteps = userSteps.activeSteps + stepsFrom;
-      await _stepsRepository.setSteps(
-        activeSteps,
-        userSteps.consumedSteps,
-      );
-    }).asFuture();
+    UserSteps userSteps = await _stepsRepository.getUserSteps();
+    var timestamp = userSteps.consumedTimestamp;
+    int stepsFrom = await _stepsRepository
+        .getGoogleFitStepsFrom(timestamp != null ? timestamp : _now());
+    int activeSteps = userSteps.activeSteps + stepsFrom;
+    await _stepsRepository.setSteps(
+      activeSteps,
+      userSteps.consumedSteps,
+    );
   }
 
-  void connect() => _stepsRepository.connect();
+  void connect() {
+    _stepsRepository.connect();
+  }
 
   @override
   void dispose() async {

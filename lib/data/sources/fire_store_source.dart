@@ -24,17 +24,29 @@ class FireStoreSource {
         },
       );
 
-  Stream<UserElements> getUserElementsStream(String userId) => _fireStore
+  Stream<UserElements> userElementsStream(String userId) => _fireStore
       .collection(FIRE_KEY_ELEMENTS)
       .document(userId)
       .snapshots()
       .transform(_elementSnapshotTransform);
 
-  Stream<UserSteps> getUserStepsStream(String userId) => _fireStore
+  Stream<UserSteps> userStepsStream(String userId) => _fireStore
       .collection(FIRE_KEY_STEPS)
       .document(userId)
       .snapshots()
       .transform(_stepSnapshotTransform);
+
+  Future<UserElements> getUserElements(String userId) => _fireStore
+      .collection(FIRE_KEY_ELEMENTS)
+      .document(userId)
+      .get()
+      .then((doc) => _makeUserElementsFromDocumentData(doc));
+
+  Future<UserSteps> getUserSteps(String userId) => _fireStore
+      .collection(FIRE_KEY_STEPS)
+      .document(userId)
+      .get()
+      .then((doc) => _makeUserStepsFromDocumentData(doc));
 
   Future<void> setSteps(
           User user, int active, int consumed, DateTime t, List<int> week) =>
@@ -65,45 +77,46 @@ class FireStoreSource {
       get _elementSnapshotTransform =>
           StreamTransformer<DocumentSnapshot, UserElements>.fromHandlers(
             handleData: (document, sink) {
-              if (document == null || document.data == null) {
-                sink.add(UserElements());
-                return;
-              }
-              sink.add(
-                UserElements(
-                  water: document.data[FIRE_KEY_WATER],
-                  earth: document.data[FIRE_KEY_EARTH],
-                  fire: document.data[FIRE_KEY_FIRE],
-                  wind: document.data[FIRE_KEY_WIND],
-                ),
-              );
+              sink.add(_makeUserElementsFromDocumentData(document));
             },
           );
+
+  UserElements _makeUserElementsFromDocumentData(DocumentSnapshot document) {
+    if (document == null || document.data == null) {
+      return UserElements();
+    }
+    return UserElements(
+      water: document.data[FIRE_KEY_WATER],
+      earth: document.data[FIRE_KEY_EARTH],
+      fire: document.data[FIRE_KEY_FIRE],
+      wind: document.data[FIRE_KEY_WIND],
+    );
+  }
 
   StreamTransformer<DocumentSnapshot, UserSteps> get _stepSnapshotTransform =>
       StreamTransformer<DocumentSnapshot, UserSteps>.fromHandlers(
         handleData: (document, sink) {
-          if (document == null || document.data == null) {
-            sink.add(UserSteps());
-            return;
-          }
-
-          sink.add(
-            UserSteps(
-              activeSteps: document.data[FIRE_KEY_ACTIVE_STEPS],
-              consumedSteps: document.data[FIRE_KEY_CONSUMED_STEPS],
-              consumedTimestamp: document.data[FIRE_KEY_CONSUMED_TIMESTAMP],
-              weekDays: [
-                document.data[FIRE_KEY_WEEK_DAY1],
-                document.data[FIRE_KEY_WEEK_DAY2],
-                document.data[FIRE_KEY_WEEK_DAY3],
-                document.data[FIRE_KEY_WEEK_DAY4],
-                document.data[FIRE_KEY_WEEK_DAY5],
-                document.data[FIRE_KEY_WEEK_DAY6],
-                document.data[FIRE_KEY_WEEK_DAY7],
-              ],
-            ),
-          );
+          sink.add(_makeUserStepsFromDocumentData(document));
         },
       );
+
+  UserSteps _makeUserStepsFromDocumentData(DocumentSnapshot document){
+    if (document == null || document.data == null) {
+      return UserSteps();
+    }
+    return UserSteps(
+      activeSteps: document.data[FIRE_KEY_ACTIVE_STEPS],
+      consumedSteps: document.data[FIRE_KEY_CONSUMED_STEPS],
+      consumedTimestamp: document.data[FIRE_KEY_CONSUMED_TIMESTAMP],
+      weekDays: [
+        document.data[FIRE_KEY_WEEK_DAY1],
+        document.data[FIRE_KEY_WEEK_DAY2],
+        document.data[FIRE_KEY_WEEK_DAY3],
+        document.data[FIRE_KEY_WEEK_DAY4],
+        document.data[FIRE_KEY_WEEK_DAY5],
+        document.data[FIRE_KEY_WEEK_DAY6],
+        document.data[FIRE_KEY_WEEK_DAY7],
+      ],
+    );
+  }
 }

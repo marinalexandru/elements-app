@@ -17,14 +17,19 @@ class StepsRepository {
 
   StreamSubscription<UserSteps> _subscription;
 
-  Stream<UserSteps> get userSteps => _userStepsSubject.stream;
+  Stream<UserSteps> get userStepsStream => _userStepsSubject.stream;
+
+  Future<UserSteps> getUserSteps() async {
+    var user = await _fireAuthSource.currentUser();
+    return _fireStoreSource.getUserSteps(user.userId);
+  }
 
   Stream<bool> get connected =>
       _fitStoreSource.connected.transform(fitTransform);
 
   StepsRepository() {
     _fireAuthSource.currentUser().then((user) {
-      _subscription = _fireStoreSource.getUserStepsStream(user.userId).listen(
+      _subscription = _fireStoreSource.userStepsStream(user.userId).listen(
         (UserSteps userSteps) {
           _userStepsSubject.sink.add(userSteps);
         },

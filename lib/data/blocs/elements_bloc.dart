@@ -15,19 +15,18 @@ class ElementsBloc extends BlocBase {
   Stream<UserElements> get userElements => _elementsRepository.userElements;
 
   void convert() async {
-    await _stepsRepository.userSteps.listen((userSteps) async {
-      int conversions = (userSteps.activeSteps / stepsPerElement).floor();
-      int active = userSteps.activeSteps % stepsPerElement;
-      var elements = _randomElements(conversions);
-      _elementsRepository.saveElements(
-        water: elements.water,
-        earth: elements.earth,
-        fire: elements.fire,
-        wind: elements.wind,
-      );
-      await _stepsRepository.setSteps(
-          active, userSteps.consumedSteps + conversions * stepsPerElement);
-    }).asFuture();
+    UserSteps userSteps = await _stepsRepository.getUserSteps();
+    int conversions = (userSteps.activeSteps / stepsPerElement).floor();
+    int active = userSteps.activeSteps % stepsPerElement;
+    var elements = _randomElements(conversions);
+    _elementsRepository.saveElements(
+      water: elements.water,
+      earth: elements.earth,
+      fire: elements.fire,
+      wind: elements.wind,
+    );
+    await _stepsRepository.setSteps(
+        active, userSteps.consumedSteps + conversions * stepsPerElement);
   }
 
   Elements _randomElements(int conversions) {
